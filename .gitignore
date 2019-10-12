@@ -29,3 +29,5 @@ build/
 
 ### VS Code ###
 .vscode/
+/src/main/java/com/hx199513/community/community/model/User.java
+/src/main/java/com/hx199513/community/community/mapper/UserMapper.java
