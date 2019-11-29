@@ -1,5 +1,6 @@
 body{
     background-color: #efefef;
+    font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
 }
 .main{
     background-color: white;
@@ -17,11 +18,74 @@ body{
     width: 40px;
     height: 40px;
 }
+.media-body{
+    padding-top: 11px;
+}
 .text-desc{
     font-size: 12px;
     font-weight: normal;
     color: #999;
 }
 .profile .section{
+    margin-top: 15px;
+}
+.community-menu{
+    color: #999;
+    font-size: 13px;
+    margin-right: 20px;
+}
+.jumbotron{
+    margin: 30px;
+}
+.comment{
+    margin:10px 0;
+}
+.btn-comment{
+    float: right;
+    margin-bottom: 10px;
+}
+.hr_question{
+    margin-bottom: 0;
+}
+.comment_question{
+    margin-top: 50px;
+}
+.menu{
+    color: #999;
+    margin-top: 7px;
+}
+.menu .icon{
+    margin-right: 6px;
+    font-size: 15px;
+    cursor: pointer;
+}
+.menu .icon:hover{
+    color: #499ef3;
+}
+.indexMedia{
+    margin-bottom: 25px;
+}
+h4{
+    font-weight: bold;
+    font-size: 20px;
+}
+h3{
+    font-weight: bold;
+    font-size: 31px;
+}
+.menu .active{
+    color: #499ef3;
+}
+.sub-comments{
+    border-radius: 5px;
+    margin-top: 10px;
+    padding-top: 15px;
+    padding-bottom: 20px;
+    border: 1px solid #eee;
+}
+.sub-comments .btn{
+    margin-top: 15px;
+}
+.second-content{
     margin-top: 15px;
 }

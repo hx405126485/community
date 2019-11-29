@@ -2,6 +2,8 @@ package com.hx199513.community.community.service;
 
 import com.hx199513.community.community.dto.PaginationDTO;
 import com.hx199513.community.community.dto.QuestionDTO;
+import com.hx199513.community.community.exception.CustomizeErrorCode;
+import com.hx199513.community.community.exception.CustomizeException;
 import com.hx199513.community.community.mapper.QuestionMapper;
 import com.hx199513.community.community.mapper.UserMapper;
 import com.hx199513.community.community.model.Question;
@@ -88,5 +90,40 @@ public class QuestionService {
             }
             paginationDTO.setQuestions(questionDTOList);
             return paginationDTO;
+    }
+
+    public QuestionDTO getById(Integer id) {
+        Question question=questionMapper.getById(id);
+        if(question==null){
+            throw new CustomizeException(CustomizeErrorCode.QUESSTION_NOT_FOUND);
+        }
+        QuestionDTO questionDTO=new QuestionDTO();
+        BeanUtils.copyProperties(question,questionDTO);
+        User user= userMapper.findById(question.getCreator());
+        questionDTO.setUser(user);
+
+        return questionDTO;
+    }
+
+    public void createOrUpdate(Question question) {
+        if(question.getId()==null){
+            //如果id==null,说明第一次创建问题，
+            // 则调用questionMapper.create（）
+            question.setGmtCreate(System.currentTimeMillis());
+            question.setGmtModified(question.getGmtCreate());
+            questionMapper.create(question);
+        }else {
+            //更新
+            question.setGmtModified(question.getGmtCreate());
+            questionMapper.update(question);
+        }
+    }
+
+
+    public synchronized void incView(Integer id) {
+        Question question=new Question();
+        question.setId(id);
+        question.setViewCount(1);
+        questionMapper.updateView(question);
     }
 }
