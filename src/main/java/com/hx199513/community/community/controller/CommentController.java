@@ -42,13 +42,13 @@ public class CommentController {
         comment.setGmtCreate(System.currentTimeMillis());
         comment.setGmtModified(System.currentTimeMillis());
         comment.setCommentator(user.getId());
-        commentService.insert(comment);
+        commentService.insert(comment,user);
         return  ResultDTO.okOf();
     }
 
     @ResponseBody
     @RequestMapping(value ="/comment/{id}",method = RequestMethod.GET)
-    public ResultDTO<List<CommentDTO>> comments(@PathVariable(name="id")Integer id){
+    public ResultDTO<List<CommentDTO>> comments(@PathVariable(name="id")Long id){
         List<CommentDTO> commentDTOS=commentService.listByType(id, CommentTypeEnum.COMMENT.getType());
         return ResultDTO.okOf(commentDTOS);
     }

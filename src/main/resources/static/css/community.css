@@ -1,6 +1,5 @@
 body{
     background-color: #efefef;
-    font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
 }
 .main{
     background-color: white;
@@ -45,7 +44,7 @@ body{
     margin-bottom: 10px;
 }
 .hr_question{
-    margin-bottom: 0;
+    margin-bottom: 5px;
 }
 .comment_question{
     margin-top: 50px;
@@ -88,4 +87,24 @@ h3{
 }
 .second-content{
     margin-top: 15px;
+}
+.info-color{
+    color: white;
+    margin: 5px 10px;
+    white-space: normal;
+    display:inline-block;
+    font-size: 15px;
+    font-family: Arial;
+}
+
+.question-related{
+    line-height: 20px;
+    font-size: 15px;
+    margin-left: 0;
+    list-style: none;
+    padding-left: 0;
+}
+.publish-tag-tab{
+    margin-top:10px;
+    display: none;
 }

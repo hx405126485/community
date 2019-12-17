@@ -2,12 +2,16 @@ package com.hx199513.community.community.service;
 
 import com.hx199513.community.community.dto.CommentDTO;
 import com.hx199513.community.community.enums.CommentTypeEnum;
+import com.hx199513.community.community.enums.NotificationStatusEnum;
+import com.hx199513.community.community.enums.NotificationTypeEnum;
 import com.hx199513.community.community.exception.CustomizeErrorCode;
 import com.hx199513.community.community.exception.CustomizeException;
 import com.hx199513.community.community.mapper.CommentMapper;
+import com.hx199513.community.community.mapper.NotificationMapper;
 import com.hx199513.community.community.mapper.QuestionMapper;
 import com.hx199513.community.community.mapper.UserMapper;
 import com.hx199513.community.community.model.Comment;
+import com.hx199513.community.community.model.Notification;
 import com.hx199513.community.community.model.Question;
 import com.hx199513.community.community.model.User;
 import org.springframework.beans.BeanUtils;
@@ -29,9 +33,11 @@ public class CommentService {
     private QuestionMapper questionMapper;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private NotificationMapper notificationMapper;
 
     @Transactional
-    public void insert(Comment comment) {
+    public void insert(Comment comment,User commentator) {
         if(comment.getParentId()==null||comment.getParentId()==0){
             throw new CustomizeException(CustomizeErrorCode.TARGET_PARAM_NOT_FOUND);
         }
@@ -52,6 +58,12 @@ public class CommentService {
                     throw new CustomizeException(CustomizeErrorCode.QUESSTION_NOT_FOUND);
                     }
                 commentMapper.insert(comment);
+                //创建通知
+                createNotify(comment, dbcomment.getCommentator(), commentator.getName(), question.getTitle(), NotificationTypeEnum.REPLY_COMMENT);
+
+                //增加评论数
+                dbcomment.setCommentCount((long) 1);
+                commentMapper.updateCommentCount(dbcomment);
             }else if (comment.getType()==CommentTypeEnum.QUESTION.getType()){
                 //回复问题
                 //判断所评论的问题是否还在
@@ -60,25 +72,40 @@ public class CommentService {
                     throw new CustomizeException(CustomizeErrorCode.QUESSTION_NOT_FOUND);
                 }
                 commentMapper.insert(comment);
+                //创建通知
+                createNotify(comment,question.getCreator(),commentator.getName(),question.getTitle(),NotificationTypeEnum.REPLY_QUESTION);
             }
-            question.setCommentCount(1);
+            question.setCommentCount((long) 1);
             questionMapper.updateComment(question);
     }
 
-    public List<CommentDTO> listByType(Integer id, Integer type) {
+    private void createNotify(Comment comment, Long receiver, String notifierName, String outerTitle, NotificationTypeEnum notificationType) {
+        Notification notification=new Notification();
+        notification.setGmtCreate(System.currentTimeMillis());
+        notification.setType(notificationType.getType());
+        notification.setOuterId(comment.getParentId());
+        notification.setNotifier(comment.getCommentator());
+        notification.setStatus(NotificationStatusEnum.UNREAD.getStatus());
+        notification.setReceiver(receiver);
+        notification.setNotifierName(notifierName);
+        notification.setOuterTitle(outerTitle);
+        notificationMapper.insert(notification);
+    }
+
+    public List<CommentDTO> listByType(Long id, Integer type) {
         List<Comment> comments=commentMapper.selectByType(id,type);
         if(comments.size()==0){
             return  new ArrayList<>();
         }
         //获取去重的评论人
-        Set<Integer> commentators=comments.stream().map(comment -> comment.getCommentator()).collect(Collectors.toSet());
+        Set<Long> commentators=comments.stream().map(comment -> comment.getCommentator()).collect(Collectors.toSet());
        //获取评论人并转换成Map
         List<User> users=new ArrayList<>();
-        for(Integer commentator:commentators){
+        for(Long commentator:commentators){
             User user=userMapper.findById(commentator);
             users.add(user);
         }
-        Map<Integer,User> userMap=users.stream().collect(Collectors.toMap(user -> user.getId(), user -> user));
+        Map<Long,User> userMap=users.stream().collect(Collectors.toMap(user -> user.getId(), user -> user));
        //转换comment为commentDTO
         List<CommentDTO> commentDTOS=comments.stream().map(comment ->{
             CommentDTO commentDTO=new CommentDTO();
